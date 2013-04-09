@@ -22,4 +22,7 @@ void bloom_set(const Bloom * const bloom, const char * const item,
 _Bool bloom_check(const Bloom * const bloom, const char * const item,
                   const size_t item_len);
 
+_Bool bloom_check_and_set(const Bloom * const bloom, const char * const item,
+                          const size_t item_len);
+
 #endif

@@ -88,7 +88,7 @@ bloom_set(const Bloom * const bloom, const char * const item,
     uint64_t      bit_offset;
     size_t        k_i = (size_t) 0U;
     size_t        offset;
-    unsigned char bit;    
+    unsigned char bit;
 
     do {
         bloom_hash(bloom, hashes, item, item_len, k_i);
@@ -108,7 +108,7 @@ bloom_check(const Bloom * const bloom, const char * const item,
     uint64_t      bit_offset;
     size_t        k_i = (size_t) 0U;
     size_t        offset;
-    unsigned char bit;    
+    unsigned char bit;
 
     do {
         bloom_hash(bloom, hashes, item, item_len, k_i);
@@ -122,4 +122,30 @@ bloom_check(const Bloom * const bloom, const char * const item,
     } while (++k_i < bloom->k_num);
 
     return 1;
+}
+
+_Bool
+bloom_check_and_set(const Bloom * const bloom, const char * const item,
+                    const size_t item_len)
+{
+    uint64_t      hashes[bloom->k_num];
+    uint64_t      bit_offset;
+    size_t        k_i = (size_t) 0U;
+    size_t        offset;
+    unsigned char bit;
+    unsigned char bit_shifted;
+    _Bool         found = 1;
+
+    do {
+        bloom_hash(bloom, hashes, item, item_len, k_i);
+        bit_offset = hashes[k_i] % ((uint64_t) bloom->bitmap_size *
+                                    (uint64_t) sizeof *bloom->bitmap * CHAR_BIT);
+        offset = (size_t) (bit_offset / (sizeof *bloom->bitmap * CHAR_BIT));
+        bit = (unsigned char) (bit_offset % (sizeof *bloom->bitmap * CHAR_BIT));
+        bit_shifted = (unsigned char) (1U << bit);
+        found &= ((bloom->bitmap[offset] & bit_shifted) >> bit);
+        bloom->bitmap[offset] |= bit_shifted;
+    } while (++k_i < bloom->k_num);
+
+    return found;
 }
