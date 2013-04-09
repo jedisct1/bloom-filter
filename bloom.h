@@ -2,6 +2,7 @@
 #ifndef __BLOOM_H__
 #define __BLOOM_H__ 1
 
+#include <sodium.h>
 #include <stdlib.h>
 
 typedef struct Bloom_ {
