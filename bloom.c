@@ -80,6 +80,17 @@ bloom_free(Bloom * const bloom)
     free(bloom);
 }
 
+size_t
+bloom_compute_bitmap_size(const size_t items_count, const double fp_p)
+{
+    double log2_2;
+    
+    log2_2 = log(2);
+    log2_2 *= log2_2;
+    return (size_t) llround((double) items_count * log(fp_p) /
+                            (-8.0 * log2_2));
+}
+
 void
 bloom_set(const Bloom * const bloom, const char * const item,
           const size_t item_len)

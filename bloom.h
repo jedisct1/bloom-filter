@@ -14,6 +14,8 @@ typedef struct Bloom_ {
 
 Bloom * bloom_new(const size_t bitmap_size, const size_t items_count);
 
+size_t bloom_compute_bitmap_size(const size_t items_count, const double fp_p);
+
 void bloom_free(Bloom * const bloom);
 
 void bloom_set(const Bloom * const bloom, const char * const item,
