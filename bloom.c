@@ -11,6 +11,12 @@
 
 #include "bloom.h"
 
+#if __has_builtin(__builtin_expect)
+#define unlikely(C) __builtin_expect((C), 0)
+#else
+#define unlikely(C) (C)
+#endif
+
 static size_t
 bloom_optimal_k_num(const Bloom * const bloom, const size_t bitmap_size,
                     const size_t items_count)
@@ -26,18 +32,18 @@ bloom_optimal_k_num(const Bloom * const bloom, const size_t bitmap_size,
     return k_num;
 }
 
-static void
-bloom_hash(const Bloom * const bloom, uint64_t * const hashes,
+static uint64_t
+bloom_hash(const Bloom * const bloom, uint64_t hashes[2],
            const char * const item, const size_t item_len, const size_t k_i)
 {
     assert(k_i < bloom->k_num);
-    if (k_i < 2U) {
+    if (unlikely(k_i < 2U)) {
         crypto_shorthash_siphash24((unsigned char *) &hashes[k_i],
                                    (const unsigned char *) item,
                                    item_len, bloom->skeys[k_i]);
+        return hashes[k_i];
     } else {
-        hashes[k_i] = hashes[0] +
-            (((uint64_t) k_i * hashes[1]) % 0xffffffffffffffc5);
+        return hashes[0] + (((uint64_t) k_i * hashes[1]) % 0xffffffffffffffc5);
     }
 }
 
@@ -99,7 +105,7 @@ void
 bloom_set(const Bloom * const bloom, const char * const item,
           const size_t item_len)
 {
-    uint64_t      hashes[bloom->k_num];
+    uint64_t      hashes[2];
     uint64_t      bit_offset;
     size_t        k_i = (size_t) 0U;
     size_t        offset;
@@ -118,7 +124,7 @@ _Bool
 bloom_check(const Bloom * const bloom, const char * const item,
             const size_t item_len)
 {
-    uint64_t      hashes[bloom->k_num];
+    uint64_t      hashes[2];
     uint64_t      bit_offset;
     size_t        k_i = (size_t) 0U;
     size_t        offset;
@@ -141,7 +147,7 @@ _Bool
 bloom_check_and_set(const Bloom * const bloom, const char * const item,
                     const size_t item_len)
 {
-    uint64_t      hashes[bloom->k_num];
+    uint64_t      hashes[2];
     uint64_t      bit_offset;
     size_t        k_i = (size_t) 0U;
     size_t        offset;
