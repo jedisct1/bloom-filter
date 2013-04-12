@@ -18,11 +18,9 @@
 #endif
 
 static size_t
-bloom_optimal_k_num(const Bloom * const bloom, const size_t bitmap_size,
-                    const size_t items_count)
+bloom_optimal_k_num(const uint64_t bitmap_bits, const size_t items_count)
 {
-    const double m = (double) ((uint64_t) bitmap_size *
-                               (uint64_t) sizeof *bloom->bitmap * CHAR_BIT);
+    const double m = (double) bitmap_bits;
     const double n = (double) items_count;
     size_t       k_num = (size_t) (double) ceil(m / n * log(2.0));
 
@@ -53,9 +51,9 @@ bloom_init(Bloom * const bloom, const size_t bitmap_size,
     if (bitmap_size >= UINT64_MAX / (sizeof *bloom->bitmap * CHAR_BIT)) {
         return -1;
     }
-    bloom->k_num = bloom_optimal_k_num(bloom, bitmap_size, items_count);
     bloom->bitmap_bits = (uint64_t) bitmap_size *
         (uint64_t) sizeof *bloom->bitmap * CHAR_BIT;
+    bloom->k_num = bloom_optimal_k_num(bloom->bitmap_bits, items_count);
     bloom->bitmap = calloc(sizeof *bloom->bitmap, bitmap_size);
     if (bloom->bitmap == NULL) {
         return -1;
