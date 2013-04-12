@@ -36,7 +36,6 @@ static uint64_t
 bloom_hash(const Bloom * const bloom, uint64_t hashes[2],
            const char * const item, const size_t item_len, const size_t k_i)
 {
-    assert(k_i < bloom->k_num);
     if (unlikely(k_i < 2U)) {
         crypto_shorthash_siphash24((unsigned char *) &hashes[k_i],
                                    (const unsigned char *) item,
