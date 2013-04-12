@@ -2,9 +2,11 @@
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
-#include <sodium.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <sodium/crypto_shorthash_siphash24.h>
+#include <sodium/randombytes.h>
 
 #include "bloom.h"
 
@@ -34,7 +36,7 @@ bloom_hash(const Bloom * const bloom, uint64_t * const hashes,
                                    item_len, bloom->skeys[k_i]);
     } else {
         hashes[k_i] = hashes[0] +
-            (((uint64_t) k_i * hashes[1]) % 18446744073709551557U);
+            (((uint64_t) k_i * hashes[1]) % 0xffffffffffffffc5);
     }
 }
 
