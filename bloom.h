@@ -2,8 +2,9 @@
 #ifndef __BLOOM_H__
 #define __BLOOM_H__ 1
 
-#include <sodium.h>
 #include <stdlib.h>
+
+#include <sodium/crypto_shorthash_siphash24.h>
 
 typedef struct Bloom_ {
     unsigned char  skeys[2][crypto_shorthash_siphash24_KEYBYTES];
