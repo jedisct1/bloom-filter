@@ -8,7 +8,7 @@
 typedef struct Bloom_ {
     unsigned char  skeys[2][crypto_shorthash_siphash24_KEYBYTES];
     unsigned char *bitmap;
-    size_t         bitmap_size;
+    uint64_t       bitmap_bits;
     size_t         k_num;
 } Bloom;
 

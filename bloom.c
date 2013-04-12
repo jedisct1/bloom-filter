@@ -49,8 +49,9 @@ bloom_init(Bloom * const bloom, const size_t bitmap_size,
         return -1;
     }
     bloom->k_num = bloom_optimal_k_num(bloom, bitmap_size, items_count);
-    bloom->bitmap_size = bitmap_size;
-    bloom->bitmap = calloc(sizeof *bloom->bitmap, bloom->bitmap_size);
+    bloom->bitmap_bits = (uint64_t) bitmap_size *
+        (uint64_t) sizeof *bloom->bitmap * CHAR_BIT;
+    bloom->bitmap = calloc(sizeof *bloom->bitmap, bitmap_size);
     if (bloom->bitmap == NULL) {
         return -1;
     }
@@ -106,8 +107,7 @@ bloom_set(const Bloom * const bloom, const char * const item,
 
     do {
         bloom_hash(bloom, hashes, item, item_len, k_i);
-        bit_offset = hashes[k_i] % ((uint64_t) bloom->bitmap_size *
-                                    (uint64_t) sizeof *bloom->bitmap * CHAR_BIT);
+        bit_offset = hashes[k_i] % bloom->bitmap_bits;
         offset = (size_t) (bit_offset / (sizeof *bloom->bitmap * CHAR_BIT));
         bit = (unsigned char) (bit_offset % (sizeof *bloom->bitmap * CHAR_BIT));
         bloom->bitmap[offset] |= (1U << bit);
@@ -126,8 +126,7 @@ bloom_check(const Bloom * const bloom, const char * const item,
 
     do {
         bloom_hash(bloom, hashes, item, item_len, k_i);
-        bit_offset = hashes[k_i] % ((uint64_t) bloom->bitmap_size *
-                                    (uint64_t) sizeof *bloom->bitmap * CHAR_BIT);
+        bit_offset = hashes[k_i] % bloom->bitmap_bits;
         offset = (size_t) (bit_offset / (sizeof *bloom->bitmap * CHAR_BIT));
         bit = (unsigned char) (bit_offset % (sizeof *bloom->bitmap * CHAR_BIT));
         if ((bloom->bitmap[offset] & (1U << bit)) == 0U) {
@@ -152,8 +151,7 @@ bloom_check_and_set(const Bloom * const bloom, const char * const item,
 
     do {
         bloom_hash(bloom, hashes, item, item_len, k_i);
-        bit_offset = hashes[k_i] % ((uint64_t) bloom->bitmap_size *
-                                    (uint64_t) sizeof *bloom->bitmap * CHAR_BIT);
+        bit_offset = hashes[k_i] % bloom->bitmap_bits;
         offset = (size_t) (bit_offset / (sizeof *bloom->bitmap * CHAR_BIT));
         bit = (unsigned char) (bit_offset % (sizeof *bloom->bitmap * CHAR_BIT));
         bit_shifted = (unsigned char) (1U << bit);
