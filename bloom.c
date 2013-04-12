@@ -111,8 +111,8 @@ bloom_set(const Bloom * const bloom, const char * const item,
     unsigned char bit;
 
     do {
-        bloom_hash(bloom, hashes, item, item_len, k_i);
-        bit_offset = hashes[k_i] % bloom->bitmap_bits;
+        bit_offset = bloom_hash(bloom, hashes,
+                                item, item_len, k_i) % bloom->bitmap_bits;
         offset = (size_t) (bit_offset / (sizeof *bloom->bitmap * CHAR_BIT));
         bit = (unsigned char) (bit_offset % (sizeof *bloom->bitmap * CHAR_BIT));
         bloom->bitmap[offset] |= (1U << bit);
@@ -130,8 +130,8 @@ bloom_check(const Bloom * const bloom, const char * const item,
     unsigned char bit;
 
     do {
-        bloom_hash(bloom, hashes, item, item_len, k_i);
-        bit_offset = hashes[k_i] % bloom->bitmap_bits;
+        bit_offset = bloom_hash(bloom, hashes,
+                                item, item_len, k_i) % bloom->bitmap_bits;
         offset = (size_t) (bit_offset / (sizeof *bloom->bitmap * CHAR_BIT));
         bit = (unsigned char) (bit_offset % (sizeof *bloom->bitmap * CHAR_BIT));
         if ((bloom->bitmap[offset] & (1U << bit)) == 0U) {
@@ -155,8 +155,8 @@ bloom_check_and_set(const Bloom * const bloom, const char * const item,
     _Bool         found = 1;
 
     do {
-        bloom_hash(bloom, hashes, item, item_len, k_i);
-        bit_offset = hashes[k_i] % bloom->bitmap_bits;
+        bit_offset = bloom_hash(bloom, hashes,
+                                item, item_len, k_i) % bloom->bitmap_bits;
         offset = (size_t) (bit_offset / (sizeof *bloom->bitmap * CHAR_BIT));
         bit = (unsigned char) (bit_offset % (sizeof *bloom->bitmap * CHAR_BIT));
         bit_shifted = (unsigned char) (1U << bit);
