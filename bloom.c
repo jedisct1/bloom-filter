@@ -11,7 +11,7 @@
 
 #include "bloom.h"
 
-#if __has_builtin(__builtin_expect)
+#ifdef __GNUC__
 #define unlikely(C) __builtin_expect((C), 0)
 #else
 #define unlikely(C) (C)
