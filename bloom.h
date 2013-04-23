@@ -2,6 +2,7 @@
 #ifndef __BLOOM_H__
 #define __BLOOM_H__ 1
 
+#include <stdint.h>
 #include <stdlib.h>
 
 #include <sodium/crypto_shorthash_siphash24.h>
