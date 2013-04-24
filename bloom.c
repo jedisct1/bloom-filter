@@ -6,8 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <sodium/crypto_shorthash_siphash24.h>
-#include <sodium/randombytes.h>
+#include <sodium.h>
 
 #include "bloom.h"
 
