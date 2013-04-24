@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <sodium/crypto_shorthash_siphash24.h>
+#include <sodium.h>
 
 typedef struct Bloom_ {
     unsigned char  skeys[2][crypto_shorthash_siphash24_KEYBYTES];
