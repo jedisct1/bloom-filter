@@ -11,9 +11,9 @@
 #include "bloom.h"
 
 #ifdef __GNUC__
-#define unlikely(C) __builtin_expect((C), 0)
+# define unlikely(C) __builtin_expect((C), 0)
 #else
-#define unlikely(C) (C)
+# define unlikely(C) (C)
 #endif
 
 static size_t
